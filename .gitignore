@@ -1,0 +1,15 @@
+# arXiv PDFs — re-downloadable via ./fetch-papers.sh (links in READING-LIST.md)
+papers/*.pdf
+
+# OS / editor cruft
+.DS_Store
+*.swp
+*~
+.Rhistory
+.Rapp.history
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
