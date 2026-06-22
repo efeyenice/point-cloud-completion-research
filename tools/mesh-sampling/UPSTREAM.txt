@@ -1,0 +1,11 @@
+Source: https://github.com/mmspg/mesh-sampling
+Commit: ee75df5faa8228e22c272a62f3671f30845e86b9
+Cloned: 2026-06-22
+Paper:  Lazzarotto & Ebrahimi, "Sampling Color and Geometry Point Clouds
+        from ShapeNet Dataset" (EPFL, 2022) — arXiv:2201.06935
+License: GPL-3.0 (see headers in the .py files)
+
+Local copy for the colored point-cloud completion project. We will ADAPT this
+(front half = AO-clean + CloudCompare color-sample) and replace its voxelization
+back half with completion normalization (FPS->N, unit-sphere, optional RGB->Lab)
+plus a partial-view generator. See notes/EPFL-mesh-sampling.md (to be written).
