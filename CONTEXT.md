@@ -37,3 +37,43 @@ _Avoid_: face culling, dedup.
 **Ambient occlusion (AO)**:
 A per-face exposure score (fraction of surrounding viewpoints from which the face is
 visible). The fix uses it to distinguish exterior faces from interior duplicates.
+
+### Partial / complete generation (the s4 stage)
+
+**Complete point cloud (ground truth, GT)**:
+The full-shape target the network must predict — here the colored cloud FPS-downsampled
+from the dense cloud to a fixed size. The "answer" half of a training pair.
+_Avoid_: full cloud, target (ambiguous), label.
+
+**Partial point cloud (partial)**:
+The incomplete, single-viewpoint input — the surface visible from one camera, with the
+occluded back/interior missing. The "question" half of a training pair.
+_Avoid_: input cloud, occluded cloud, observation.
+
+**Partial–complete pair**:
+One (partial, GT) for the same model, in the same coordinate frame — a single training
+example. Critically, the partial is NOT a subset of the GT (PCN: "X is not a subset of Y").
+_Avoid_: sample, datum.
+
+**Back-projected depth (depth back-projection)**:
+PCN's partial mechanism: render a 2.5D depth image from a virtual camera viewing the
+**mesh**, then unproject its pixels into 3D points. Gives true occlusion and perspective
+density. Our `meshray_*` methods do this with an Open3D raycaster.
+_Avoid_: depth render (ok loosely), unprojection.
+
+**Viewpoint (view)**:
+A virtual camera pose (a point on a sphere around the object, looking at its center) from
+which one partial is generated. 8 per model, seeded and shared across all partial methods.
+_Avoid_: angle, camera (the device), shot.
+
+**Point-projection partial (ptproj)**:
+The alternative partial method — project the dense colored cloud through the pinhole camera
+and z-buffer to the nearest point per pixel; color comes directly from the surviving point.
+A more sensor-faithful cousin of Hidden Point Removal.
+_Avoid_: HPR (a different, hull-based algorithm), splatting.
+
+**See-through (leakage)**:
+The artifact where a point-cloud-based partial (ptproj) lets back-surface points show
+through the gaps between front points, because points — unlike a mesh — don't fully
+occlude. Worst on thin structures.
+_Avoid_: bleed, ghosting.
