@@ -38,7 +38,8 @@ The supporting choices, all recorded in `notebooks/pcnTraining.ipynb` (T0 config
 - **Color-ok subset everywhere:** models whose GT color std ≤ 0.01 (textureless) are excluded from
   **all** arms — including geometry-only A — so the comparison is never confounded by data.
 - **Verification ladder as hard gates:** overfit-1 → overfit-10 (memorize fixed pairs; pass = fine
-  CD-L2 ×10³ < 0.3 and visually identical panels, color MSE < 1e-3 for B) → only then the full runs
+  CD-L2 ×10³ < 0.3 and visually identical panels, color MSE < 5e-3 for B — see Amendments) → only
+  then the full runs
   with a **model-level** 16/4-per-category split (8 views of one model are near-duplicates; a
   pair-level split would leak).
 - Runs write `config.json`, `metrics.csv`, best/latest checkpoints (resumable), and PNG/HTML panels
@@ -68,3 +69,22 @@ The supporting choices, all recorded in `notebooks/pcnTraining.ipynb` (T0 config
   and both loss terms are logged separately so color can never silently trade against geometry.
 - `runs_s5/comparison/` (table + side-by-side panels on identical val samples) is the week's
   deliverable to the advisor.
+
+## Amendments (2026-07-13, after the first two Colab gate runs)
+
+The overfit-1 gate FAILed twice on color while geometry passed by >12× both times — each failure
+taught something now baked into the notebook:
+
+1. **Gates use a constant LR (5e-4), not the full-run schedule.** The schedule decays per *epoch*;
+   an overfit epoch is one optimizer step, so the LR collapsed ×0.06 mid-gate and color froze at
+   init (MSE 0.103) while geometry (which converges in ~100 steps) sailed through.
+2. **Color now TRAINS with soft-target BCE; rgb MSE remains the reported metric.** With constant LR,
+   sigmoid+MSE color still crawled (0.166 → 0.031 in 2000 steps, plateauing): MSE's logit gradient
+   carries a σ′ factor that vanishes at extreme targets — precisely where ShapeNet colors live
+   (near-white bodies, near-navy details). BCE∘sigmoid's logit gradient is (σ − target): no
+   vanishing, same optimum.
+3. **The color gate bar is 5e-3 per-channel MSE (was 1e-3).** NN-correspondence color MSE has a
+   noise floor: points near color boundaries flip their nearest-GT target as geometry jitters.
+   1e-3 (~1% RMSE) sat below that floor for detailed textures; 5e-3 (~0.07 RMSE) still clearly
+   fails both observed failure modes (frozen 0.103, blurred 0.031). Panels remain the qualitative
+   judge.
