@@ -77,3 +77,47 @@ The artifact where a point-cloud-based partial (ptproj) lets back-surface points
 through the gaps between front points, because points — unlike a mesh — don't fully
 occlude. Worst on thin structures.
 _Avoid_: bleed, ghosting.
+
+### Training / evaluation (the s5 stage)
+
+**s5 baseline**:
+The geometry-only completion model trained on our own s4 pairs — the controlled twin
+that every color experiment is measured against. One of two "baselines" in this project.
+_Avoid_: "the baseline" unqualified (ambiguous with the published PoinTr baseline).
+
+**Published PoinTr baseline**:
+The literature reference number (PoinTr ≈2.851 CD ×10³ on ShapeNet-ViPC) that the project
+eventually reproduces as a separate milestone. Not trained by us in s5.
+_Avoid_: conflating it with the s5 baseline.
+
+**Arm**:
+One training configuration of the shared model, differing only in which channels it
+consumes and predicts: A (xyz→xyz), B (xyzrgb→xyzrgb), C (xyzrgb→xyz). A→C isolates the
+effect of color input; C→B isolates the effect of jointly predicting color.
+_Avoid_: variant, experiment (both overloaded).
+
+**Overfit ladder**:
+The gate sequence — memorize one pair, then ten, then train for real — that proves the
+pipeline can learn before any result is trusted. The advisor's sanity check.
+_Avoid_: smoke test (that term belongs to data generation).
+
+**Coarse cloud / fine cloud**:
+The model's two predictions: a low-resolution global shape first (coarse), then the
+full-resolution completion unfolded from it (fine). Each is supervised against a GT of
+matching size.
+_Avoid_: draft/final, low-res output.
+
+**Folding grid**:
+The small 2D patch of points each coarse point unfolds into around itself to produce the
+fine cloud.
+_Avoid_: upsampling kernel, tile.
+
+**Model-level split**:
+Partitioning train/val by model, never by pair — the 8 views of one model are
+near-duplicates, so a pair-level split would leak shapes into val.
+_Avoid_: random split (underspecified).
+
+**Color error at NN correspondence**:
+The color metric: rgb error between each predicted point and its geometrically nearest
+GT point (and symmetrically), so color is judged only where geometry already matches.
+_Avoid_: color chamfer (we do not mix rgb into the distance used for matching).
