@@ -121,3 +121,11 @@ _Avoid_: random split (underspecified).
 The color metric: rgb error between each predicted point and its geometrically nearest
 GT point (and symmetrically), so color is judged only where geometry already matches.
 _Avoid_: color chamfer (we do not mix rgb into the distance used for matching).
+
+**Decoupled color head**:
+Predicting color in a separate branch that reads only detached geometry features, so
+color gradients cannot alter the predicted shape — color paints the geometry, never
+steers it. Makes arm B's geometry the same optimization problem as arm C's by
+construction.
+_Avoid_: two-stage model (it is one network, one forward pass), frozen backbone
+(geometry still trains — just not from color).
