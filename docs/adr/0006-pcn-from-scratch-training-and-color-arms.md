@@ -88,3 +88,15 @@ taught something now baked into the notebook:
    1e-3 (~1% RMSE) sat below that floor for detailed textures; 5e-3 (~0.07 RMSE) still clearly
    fails both observed failure modes (frozen 0.103, blurred 0.031). Panels remain the qualitative
    judge.
+4. **Color heads are DECOUPLED from geometry (run 3, the architectural lesson).** With one shared
+   decoder emitting xyzrgb, the BCE-conditioned color gradients destabilized geometry through the
+   shared weights: arm B's cd oscillated at ~2.3× arm A's level (7.5 vs 3.1 ×10³, F-score stuck at
+   ~0.78 vs 0.99) and the jittering geometry churned the NN correspondences, holding color flat at
+   ~0.14 — a closed interference loop. v1 therefore predicts color in **separate heads that read
+   only detached features** ("paint the shape, never steer it"): color gradients provably cannot
+   reach the encoder/coarse/folding weights (unit-tested: geometry gradients are bitwise-identical
+   with the color loss on or off). **This redefines arm B** as *decoupled* joint prediction —
+   B-vs-C geometry becomes a consistency check rather than a finding, and the geometry story lives
+   in A-vs-C. The interference itself is a legitimate negative finding (naive fully-coupled xyzrgb
+   training hurts both modalities — echoing the field's "naive fusion hurts" lesson from ViPC), and
+   **coupled training with a tuned λ is banked as a future ablation**, not silently discarded.
