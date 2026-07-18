@@ -70,10 +70,10 @@ The supporting choices, all recorded in `notebooks/pcnTraining.ipynb` (T0 config
 - `runs_s5/comparison/` (table + side-by-side panels on identical val samples) is the week's
   deliverable to the advisor.
 
-## Amendments (2026-07-13, after the first two Colab gate runs)
+## Amendments (2026-07-13 → 2026-07-18, updated after each Colab gate run)
 
-The overfit-1 gate FAILed twice on color while geometry passed by >12× both times — each failure
-taught something now baked into the notebook:
+The overfit-1 gate FAILed on color while geometry passed every time — each failure taught
+something now baked into the notebook:
 
 1. **Gates use a constant LR (5e-4), not the full-run schedule.** The schedule decays per *epoch*;
    an overfit epoch is one optimizer step, so the LR collapsed ×0.06 mid-gate and color froze at
@@ -100,3 +100,17 @@ taught something now baked into the notebook:
    in A-vs-C. The interference itself is a legitimate negative finding (naive fully-coupled xyzrgb
    training hurts both modalities — echoing the field's "naive fusion hurts" lesson from ViPC), and
    **coupled training with a tuned λ is banked as a future ablation**, not silently discarded.
+5. **Fourier positional encoding on the color head; the color gate is oracle-calibrated (run 4).**
+   With decoupling verified in production (arm B geometry ≡ arm A: cd_l2 0.0152 vs 0.0151), bulk
+   color memorized almost instantly (0.036 by step 249) but sharp edges crawled (fine MSE stuck at
+   0.0174): a raw-coordinate ReLU MLP is *spectrally biased* — it fits low-frequency color fast and
+   sharp white↔navy boundaries pathologically slowly (Rahaman 2019; Tancik/NeRF 2020). The color
+   head's position input is now Fourier-encoded (8 bands). CPU regression on a worst-case striped
+   texture: PE reaches 0.035 — at the metric's floor — while raw xyz sits at 0.104.
+   The same probe exposed that **fixed-constant color bars were guesses**: the metric bottoms out
+   at the **oracle NN-painter floor** (repaint every predicted point with its nearest-GT color and
+   re-score; the residual is pure correspondence ambiguity at color edges, and it varies per
+   texture — ~0.04 on dense stripes, far lower on sparse-detail objects). The gate is therefore
+   **relative**: pass = color MSE within 2× of the measured floor, or under 5e-3 absolute,
+   whichever is looser. The floor (`val_color_oracle`) is computed and reported with every
+   evaluation — color quality in this study is always read against it.
