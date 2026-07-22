@@ -129,3 +129,53 @@ steers it. Makes arm B's geometry the same optimization problem as arm C's by
 construction.
 _Avoid_: two-stage model (it is one network, one forward pass), frozen backbone
 (geometry still trains — just not from color).
+
+### The scale-curve stage (s6)
+
+**Data-scale curve**:
+The experiment that trains the three arms at several training-set sizes N and plots a
+metric against N — here the color-hurts gap vs N — to show *how* an effect scales rather
+than measuring it at one point. Answers the advisor's "under what conditions?".
+_Avoid_: ablation (a single on/off comparison), sweep (underspecified).
+
+**Color-hurts gap (A→C)**:
+The geometry penalty from feeding color *in* — fine-CD of arm C minus arm A, as a % — the
+curve's primary quantity. Positive = color input hurts geometry. s5 measured +17% at
+~15 models/cat; the open question is whether it shrinks/flips as N grows.
+_Avoid_: "the color effect" (ambiguous with the output tax).
+
+**Color-output tax (C→B)**:
+The geometry cost of *also predicting* color — fine-CD of arm B minus arm C. Expected ≈0
+by construction (decoupled color head), so it doubles as a noise estimate. s5: +0.59.
+_Avoid_: conflating with the A→C gap.
+
+**Color-generalization gap**:
+How far predicted color on *unseen* shapes sits above the oracle NN-painter floor (the
+best any painter could do given the geometry). s5: 0.077 vs a ~0.016 floor. Tracks whether
+color learns a transferable rule or just memorizes.
+_Avoid_: raw color MSE (meaningless without the floor).
+
+**Color-copy baseline (NN / mean / median)**:
+Three training-free color predictors — give each output point the color of its nearest
+input point, or the mean/median of its k nearest input points. The floor a *learned* color
+head must beat; instantiates the advisor's "NN – mean – median" note.
+_Avoid_: "the baseline" unqualified (already overloaded — see s5 baseline).
+
+**Fixed held-out test set**:
+A constant set of models never used in training, reserved once and scored at every curve
+point, so N (train size) is the only thing that varies across the curve. Distinct from the
+val set, which selects checkpoints / triggers early-stopping.
+_Avoid_: conflating test with val; per-N re-splitting (changes the eval shapes).
+
+**Uniformity descriptor**:
+A *reported* number (spread of within-cloud nearest-neighbour spacing, from s5 §7) that
+quantifies how evenly a predicted cloud covers the surface — Chamfer is blind to it. A
+descriptor only this stage; turning it into a training loss is the deferred densification
+thread.
+_Avoid_: density (predicted points are actually *closer* on average — the issue is even-ness).
+
+**Early-stopping on val**:
+Halting a run once validation error stops improving for a patience window, rather than
+running a fixed 300 epochs — s5 val bottoms out ~epoch 40 then overfits. Cheaper and
+matches the best-on-val number we already report.
+_Avoid_: "converged" (val improving stopped; train loss keeps falling).
