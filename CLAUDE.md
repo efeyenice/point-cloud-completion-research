@@ -20,8 +20,9 @@ through a controlled, baseline-first, honestly-reported empirical study.
   against a *fixed* held-out test set, and plot the A→C gap vs N to find *whether/where* the color-harm flips.
   Harness is merged to `main` (GPU-FPS, fixed test split + growable nested train pool, NN/mean/median
   color-copy baselines, early-stopping, curve driver + report).
-- **Now (ADR-0008):** moving to a **resilient, HF-native workflow** (below), because Colab disconnects kept
-  nuking the scaled data-gen run.
+- **Done (ADR-0008):** the **resilient, HF-native workflow** is built — `tools/pc_resilient.py` (per-model
+  atomic data-gen), `tools/pc_hf_data.py` (HF→training loader), `pcnTraining` wired to HF + W&B + run-sync,
+  and `google-colab-cli` adopted for headless keep-alive runs. The method is written up in `docs/WORKFLOW.md`.
 
 ## Where everything lives (ADR-0008 — Drive is retired)
 | Artifact | Home |
@@ -41,9 +42,11 @@ through a controlled, baseline-first, honestly-reported empirical study.
 ## Repo layout
 - `notebooks/` — `dataGeneration` (s1, colored sampling), `partialGeneration` (s4, PCN-style partials + GT),
   `pcnTraining` (s5, the model + arms + scale curve). **Source of truth for all code.**
-- `docs/adr/` — architecture decisions 0001–0008. `CONTEXT.md` — domain glossary.
+- `docs/adr/` — architecture decisions 0001–0008. `docs/WORKFLOW.md` — **how we co-research** (for adopters).
+  `docs/READING-LIST.md` — the paper list. `CONTEXT.md` — domain glossary.
 - `notes/` — dated handoff journal + `00-KEY-FINDING-rgb-helps-completion.md`.
-- `tools/mesh-sampling/` — vendored EPFL sampling. `papers/`, `READING-LIST.md`, `W1/W2` decks — background.
+- `tools/` — resilient modules `pc_resilient.py` (data-gen) + `pc_hf_data.py` (training loader) with tests,
+  and vendored `mesh-sampling/`. `archive/` — reading-phase + source materials (decks, proposal).
 
 ## Research lineage (context)
 Backbones: PointNet → PointNet++ → DGCNN → Point Transformer. Completion: PCN → FoldingNet →
@@ -59,7 +62,9 @@ the controlled "when does color help?" study.
 - The researcher (Efe) has **delegated day-to-day management** to the AI: take ownership, act with a clear
   recommendation, grill only on genuine forks. He wants to understand, and dislikes clutter/confusion.
 
-## Immediate next step
-Finish the **HF-native resilience rewrite** of `partialGeneration` (per-model `npz` + `CommitScheduler` +
-idempotent driver + anti-idle), regenerate ~200/category into `pc-completion-data`, then run the scale
-curve (gates → T9 → T10) with W&B logging. Tracking in `docs/adr/0008` and the memory workflow note.
+## Immediate next step (on Colab)
+1. Add `HF_TOKEN` (write) + `WANDB_API_KEY` to **Colab → Secrets**.
+2. `partialGeneration`: paste the resilient driver cell from `tools/pc_resilient.py` (it replaces the old
+   batch cells G/P2/Q4), run it → ~200/category `npz` stream to `pc-completion-data`. Disconnect → re-run the cell.
+3. `pcnTraining`: gates → T9 (scale curve) → T10 (report). Metrics to W&B, checkpoints to HF `runs/`.
+4. **Read the curve:** does the −17% color-harm shrink/flip as N grows? (the whole point — ADR-0007).

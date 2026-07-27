@@ -5,6 +5,19 @@ controlled, baseline-first study (PCN from scratch, three arms A/B/C).
 
 - **Handoff / current state:** [CLAUDE.md](./CLAUDE.md)
 - **Decisions:** [docs/adr/](./docs/adr/) · **Domain glossary:** [CONTEXT.md](./CONTEXT.md)
+- **How we co-research with Claude (adopt this style):** [docs/WORKFLOW.md](./docs/WORKFLOW.md)
+
+## Structure
+```
+CLAUDE.md          handoff / current state (AGENTS.md points here)
+CONTEXT.md         domain glossary
+docs/adr/          architecture decisions (0001–0008)
+docs/WORKFLOW.md   how we co-research with Claude
+notebooks/         Colab: dataGeneration (s1) -> partialGeneration (s4) -> pcnTraining (s5)
+tools/             pc_resilient.py, pc_hf_data.py (+ tests), mesh-sampling/
+notes/             research journal (handoffs) + key finding
+archive/           reading-phase + source materials
+```
 
 ## Where things live (ADR-0008)
 Code → this repo · datasets + run artifacts → HF [`efeyenice/pc-completion-data`](https://huggingface.co/datasets/efeyenice/pc-completion-data)
