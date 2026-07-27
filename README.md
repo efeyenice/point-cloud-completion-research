@@ -1,0 +1,17 @@
+# Point Cloud Completion Research
+
+Does adding **per-point RGB/color** improve 3D point-cloud completion, and **under what conditions**? A
+controlled, baseline-first study (PCN from scratch, three arms A/B/C).
+
+- **Handoff / current state:** [CLAUDE.md](./CLAUDE.md)
+- **Decisions:** [docs/adr/](./docs/adr/) · **Domain glossary:** [CONTEXT.md](./CONTEXT.md)
+
+## Where things live (ADR-0008)
+Code → this repo · datasets + run artifacts → HF [`efeyenice/pc-completion-data`](https://huggingface.co/datasets/efeyenice/pc-completion-data)
+· live metrics → **Weights & Biases** · demo → HF Space `efeyenice/pc-completion-runs`. *(Google Drive retired.)*
+
+## Notebooks (run on Colab, opened from GitHub)
+`notebooks/dataGeneration.ipynb` (s1) → `partialGeneration.ipynb` (s4) → `pcnTraining.ipynb` (s5).
+
+Every long run is **resumable**: it commits per-unit to HF and skips finished units on restart, so a Colab
+disconnect costs one unit, not the whole run.
