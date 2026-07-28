@@ -1,0 +1,72 @@
+% weeklyreport.sty — shared style for the pc-completion weekly research reports.
+% Standard TeX Live packages only. See reports/README.md for the system's rules.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{weeklyreport}[2026/07/28 v1.0 pc-completion weekly report style]
+
+% ---------- layout & typography ----------
+\RequirePackage[a4paper,top=2.2cm,bottom=2.6cm,left=2.4cm,right=2.4cm]{geometry}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{lmodern}
+\RequirePackage{microtype}
+\RequirePackage{parskip}
+\RequirePackage{graphicx}
+\RequirePackage{amsmath}
+\RequirePackage{booktabs}
+\RequirePackage{multirow}
+\RequirePackage[table]{xcolor}
+\RequirePackage{enumitem}
+\setlist{nosep,leftmargin=1.35em}
+\RequirePackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\RequirePackage[skins,breakable]{tcolorbox}
+\RequirePackage{fancyhdr}
+\RequirePackage{caption}
+\captionsetup{font=small,labelfont=bf}
+
+% ---------- palette ----------
+\definecolor{wrnavy}{HTML}{1F3A5F}
+\definecolor{wraccent}{HTML}{2B6CB0}
+\definecolor{wrgray}{HTML}{555555}
+
+\RequirePackage[colorlinks=true,linkcolor=wrnavy,urlcolor=wraccent,citecolor=wrnavy]{hyperref}
+\RequirePackage[capitalise,noabbrev]{cleveref}
+
+% ---------- report metadata (set in main.tex before \reportheader) ----------
+\makeatletter
+\newcommand*\reporttitle[1]{\def\wr@title{#1}}
+\newcommand*\reportweek[1]{\def\wr@week{#1}}
+\newcommand*\reportdates[1]{\def\wr@dates{#1}}
+\newcommand*\reportauthors[1]{\def\wr@authors{#1}}
+\newcommand*\reportquestion[1]{\def\wr@question{#1}}
+\newcommand*\reportrepo[1]{\def\wr@repo{#1}}
+
+\newcommand\reportheader{%
+  \begin{center}
+    {\LARGE\bfseries\color{wrnavy}\wr@title\par}
+    \vspace{3pt}
+    {\large Weekly research report \wr@week\ --- \wr@dates\par}
+    \vspace{2pt}
+    {\wr@authors\par}
+    \vspace{6pt}
+    {\itshape Question of the week: \wr@question\par}
+  \end{center}
+  \vspace{2pt}\hrule\vspace{12pt}}
+
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[L]{\small\color{wrgray}\wr@repo}
+\fancyfoot[R]{\small\color{wrgray}\thepage}
+\makeatother
+
+% ---------- boxes ----------
+\newtcolorbox{tldr}{enhanced,breakable,colback=wrnavy!6,colframe=wrnavy,
+  boxrule=0.8pt,arc=2mm,left=8pt,right=8pt,top=6pt,bottom=6pt,
+  fonttitle=\bfseries,coltitle=white,title={TL;DR --- the week in three findings}}
+\newtcolorbox{processbox}{enhanced,breakable,colback=wrgray!8,colframe=wrgray,
+  boxrule=0.6pt,arc=2mm,left=8pt,right=8pt,top=6pt,bottom=6pt,
+  fonttitle=\bfseries,coltitle=white,title={How this week was run}}
+
+% ---------- small conveniences ----------
+\newcommand*\arm[1]{\textsf{#1}}                       % arm names: \arm{A_geo} etc.
+\newcommand*\runname[1]{\texttt{\small #1}}            % run ids
+\newcommand*\worse[1]{#1\,\% worse}                    % harm phrasing helper

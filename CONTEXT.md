@@ -141,17 +141,20 @@ _Avoid_: ablation (a single on/off comparison), sweep (underspecified).
 **Color-hurts gap (A→C)**:
 The geometry penalty from feeding color *in* — fine-CD of arm C minus arm A, as a % — the
 curve's primary quantity. Positive = color input hurts geometry. s5 measured +17% at
-~15 models/cat; the open question is whether it shrinks/flips as N grows.
+~15 models/cat; the s6 curve answered the scaling question: the gap *shrinks* with N
+(+6.6% → +4.8% → +4.0% at N = 20/60/150 per cat) but does not flip in the tested range.
 _Avoid_: "the color effect" (ambiguous with the output tax).
 
 **Color-output tax (C→B)**:
 The geometry cost of *also predicting* color — fine-CD of arm B minus arm C. Expected ≈0
-by construction (decoupled color head), so it doubles as a noise estimate. s5: +0.59.
+by construction (decoupled color head), so it doubles as a noise estimate. s5: +0.59;
+s6: ≈0 at every rung (B even edges out C slightly, within seed noise).
 _Avoid_: conflating with the A→C gap.
 
 **Color-generalization gap**:
 How far predicted color on *unseen* shapes sits above the oracle NN-painter floor (the
-best any painter could do given the geometry). s5: 0.077 vs a ~0.016 floor. Tracks whether
+best any painter could do given the geometry). s5: 0.077 vs a ~0.016 floor; s6: 0.073 vs
+a 0.020 floor at N=150 — better than NN-copy but still behind mean-copy. Tracks whether
 color learns a transferable rule or just memorizes.
 _Avoid_: raw color MSE (meaningless without the floor).
 
@@ -179,3 +182,17 @@ Halting a run once validation error stops improving for a patience window, rathe
 running a fixed 300 epochs — s5 val bottoms out ~epoch 40 then overfits. Cheaper and
 matches the best-on-val number we already report.
 _Avoid_: "converged" (val improving stopped; train loss keeps falling).
+
+**Continuity check**:
+Re-measuring a previously observed regime *inside* a changed pipeline before trusting the
+new pipeline's trend — the s6 curve's smallest rung re-measures s5's harm regime. Sign
+agreement validates the effect; a magnitude difference (s5 +17% vs s6 +6.6%) quantifies
+how pipeline-dependent the measurement is, and marks cross-pipeline numbers as
+non-comparable.
+_Avoid_: replication (implies an identical pipeline), sanity check (weaker claim).
+
+**Residual color harm**:
+The color-hurts gap remaining at the largest tested N — the curve's current endpoint
+(s6: +4.0% at N=150/cat, sign-consistent across seeds). "Residual" flags that it may keep
+shrinking beyond the tested range; it is a frontier, not a converged asymptote.
+_Avoid_: "the final gap" (nothing final about the tested range).
