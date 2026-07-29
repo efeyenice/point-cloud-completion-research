@@ -13,3 +13,6 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# LaTeX build artifacts (weekly reports); the final report.pdf IS committed
+reports/**/build/

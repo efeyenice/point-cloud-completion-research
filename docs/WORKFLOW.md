@@ -18,6 +18,7 @@ teammate adopting this style, this file is the whole method.
 | Decisions / rationale | **git** — `docs/adr/`, `CONTEXT.md`, `notes/handoff-*` |
 | Datasets + run artifacts | **Hugging Face** — `efeyenice/pc-completion-data` |
 | Live metrics / curves | **Weights & Biases** |
+| Weekly reports | **git** — `reports/<date>-<slug>/` (LaTeX source + committed PDF) |
 | Demo | **HF Space** `efeyenice/pc-completion-runs` |
 | Scratch | **Colab local disk** (ephemeral) |
 
@@ -28,7 +29,8 @@ teammate adopting this style, this file is the whole method.
 4. **Run** — on Colab, **resumably** (see below).
 5. **Document** — an ADR (`docs/adr/`) for hard-to-reverse choices; new domain terms in
    `CONTEXT.md`; a session log in `notes/handoff-<date>.md`.
-6. **Report** — numbers **and** visuals, framed against the baseline.
+6. **Report** — numbers **and** visuals, framed against the baseline, as the weekly
+   LaTeX report in `reports/` (see Reporting below).
 
 ## Conventions
 - **Decisions → ADRs** (`docs/adr/NNNN-*.md`), written only when a choice is hard to
@@ -38,6 +40,18 @@ teammate adopting this style, this file is the whole method.
 - **Resilience is mandatory** for long Colab jobs: commit **per unit** to HF and
   **resume idempotently** (skip units already on HF). "Done" = bytes on HF, never in RAM.
   See `tools/pc_resilient.py` (data-gen) and `pcnTraining` T7/T9 (training).
+
+## Reporting (weekly)
+One LaTeX report per week in `reports/<date>-<slug>/` (layout + recipe:
+`reports/README.md`), built with `make figures && make`. The rules that keep it honest:
+- **Numbers are macros, never typed** — `make_figures.py` derives every quoted number
+  from the HF run artifacts into `generated/numbers.tex`, so prose cannot drift from data.
+- **Figures are scripted** from the same artifacts; qualitative panels reuse the run's own
+  renders (recomposed, never redrawn).
+- **Claims stay conservative** — baseline-relative, seed spread shown, no extrapolation
+  beyond the tested range; the process record (timeline, incidents, lessons) ships as an
+  appendix, not hidden.
+- The **PDF is committed**, so the record reads without a TeX install.
 
 ## Running headless (google-colab-cli)
 Colab disconnects are unavoidable; we beat them two ways — resumable code (above) *and*

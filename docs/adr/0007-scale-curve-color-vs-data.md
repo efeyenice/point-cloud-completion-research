@@ -63,3 +63,17 @@ Chamfer's blindness to point spread — but **no uniformity/EMD/repulsion *loss*
 - Reuses the s5 harness wholesale — the arms, decoupled color heads, Fourier PE, oracle floor, and
   gates are unchanged; only the split (fixed test + growable train), early-stop, copy-baselines, and
   a curve-driver cell are added.
+
+## Outcome (added 2026-07-28)
+
+The curve ran to completion — 15 runs, all artifacts on HF `runs/`; full write-up in
+`reports/2026-07-28-scale-curve/` (PDF committed). Answer: **the harm shrinks but does not
+flip** — A→C = +6.6% (N=20) → +4.8% (N=60) → +4.0% (N=150; 3 seeds, sign-consistent). The
+continuity check passed on *sign* but not *magnitude*: the small rung measured +6.6%, not
+s5's +17%. The harness changes bundled into this design (fixed test set, early stopping,
+`meshray_nn`-only partials, 4 training views, regenerated data) all plausibly shrink the
+measured gap, so s5's −17% is treated as **superseded** and cross-pipeline magnitudes as
+non-comparable — the within-pipeline trend is the claim, which is exactly why the curve
+held everything but N fixed. The "baselines-now" call paid off: the learned color head
+beats NN-copy but not mean-copy, which sharpens the next color thread. B_joint matched or
+edged C_colin at every rung, confirming the output tax ≈ 0.
