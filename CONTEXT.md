@@ -196,3 +196,52 @@ The color-hurts gap remaining at the largest tested N — the curve's current en
 (s6: +4.0% at N=150/cat, sign-consistent across seeds). "Residual" flags that it may keep
 shrinking beyond the tested range; it is a frontier, not a converged asymptote.
 _Avoid_: "the final gap" (nothing final about the tested range).
+
+### The generative phase (s7)
+
+**Shape prior**:
+What a completion model believes complete shapes look like *before* seeing the partial.
+The occluded region is unobserved, so every completion = prior + evidence; models differ
+only in whether the prior is hand-built (symmetry, mean shape), implicit (regressor
+weights), or explicit and sampleable (a generative model).
+_Avoid_: "prior" unqualified when color is in scope (see color prior).
+
+**Color prior**:
+The same notion for appearance — what colors are plausible given a geometry. Mean-copy
+instantiates a trivial *local* color prior, and it is the bar a learned color model must
+beat.
+_Avoid_: conflating with the color-copy baseline mechanics (that's the estimator; this is
+the concept).
+
+**Sampler vs. regressor (regression-to-the-mean)**:
+The fork the generative phase exists to study. Completion is ambiguous (many valid backs
+for one front); a regressor trained on a symmetric loss hedges between the plausible
+answers — over-smooth, mean-ish output — while a sampler draws one committed answer from
+the learned distribution. Our uniformity issue and the mean-copy-unbeaten color head are
+regression-to-the-mean symptoms.
+_Avoid_: "generative" as vague praise; sharpness (an effect, not the mechanism).
+
+**Generative phase (s7)**:
+The project stage that recasts completion as conditional sampling from an explicit shape
+prior, opened once the baseline-first phase (s5–s6) produced trustworthy regression
+anchors — the sequencing the advisor set ("baseline first; revisit in the generative
+phase").
+_Avoid_: "the diffusion pivot" (it extends the controlled study, not replaces it).
+
+**Two-row protocol (honesty row / distribution rows)**:
+The generative-phase reporting rule: every sampled result carries an *honesty row* —
+one-sample CD on the same fixed test set, directly comparable to the regression arms —
+and *distribution rows* — best-of-k minimum CD and TMD. Exists because Chamfer rewards
+hedging: a sampler can be genuinely better and still measure worse on one sample.
+_Avoid_: "the new metric" (it is a protocol, not a metric).
+
+**Best-of-k minimum CD**:
+Draw k completions for one partial, report the minimum CD to GT — measures whether the
+learned prior *covers* the true mode, independent of which sample committed to it.
+_Avoid_: MMD (a set-level unconditional-generation metric).
+
+**Total mutual difference (TMD)**:
+The mean pairwise CD among the k samples for one partial — measures diversity /
+commitment. Near-zero TMD = the sampler collapsed to a single answer (a regressor in
+disguise).
+_Avoid_: variance (underspecified).

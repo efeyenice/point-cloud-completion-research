@@ -1,7 +1,7 @@
 # CLAUDE.md — Point Cloud Completion Research
 
 > **Canonical handoff.** New agent or person: read this top to bottom first. `AGENTS.md` points here.
-> Last updated: 2026-07-28.
+> Last updated: 2026-07-29.
 
 ## What this is
 A summer-2026 research project on **3D point cloud completion** — predict the complete shape from a
@@ -10,7 +10,14 @@ experiments, builds, analyzes, keeps the workflow clean) while the researcher nu
 question: **"Does adding per-point RGB/color improve completion, and under what conditions?"** — answered
 through a controlled, baseline-first, honestly-reported empirical study.
 
-## Where we are (2026-07-28)
+## Where we are (2026-07-29)
+- **The generative phase (s7) is OPEN (ADR-0009):** next spine = **from-scratch conditional point
+  diffusion** — completion recast as sampling from an explicit learned shape prior, keeping the
+  controlled A/C(/B) arms. Eval = **two-row protocol** (one-sample CD honesty row, s6-comparable +
+  best-of-10 min-CD / TMD distribution rows). Phasing: unconditional airplane DDPM (gated) → A-diff →
+  C-diff (**the diffusion A→C delta = headline**). Curve widening/extension continues as background
+  data-gen (feeds curve *and* diffusion). Advisor-meeting crib sheet (decodes her diffusion / grid /
+  priors fragments into 4 questions): `notes/handoff-2026-07-29.md`. Glossary: `CONTEXT.md` §s7.
 - **The scale curve RAN and is read (ADR-0007 outcome):** 600 fresh bundles + 15 runs
   (n{020,060,150} × A/B/C, 3 seeds at top rung) all on HF. **The color-input harm shrinks with
   data but does not flip: A→C = +6.6% (N=20) → +4.8% (N=60) → +4.0% (N=150, sign-consistent
@@ -47,7 +54,7 @@ through a controlled, baseline-first, honestly-reported empirical study.
 ## Repo layout
 - `notebooks/` — `dataGeneration` (s1, colored sampling), `partialGeneration` (s4, PCN-style partials + GT),
   `pcnTraining` (s5, the model + arms + scale curve). **Source of truth for all code.**
-- `docs/adr/` — architecture decisions 0001–0008. `docs/WORKFLOW.md` — **how we co-research** (for adopters).
+- `docs/adr/` — architecture decisions 0001–0009. `docs/WORKFLOW.md` — **how we co-research** (for adopters).
   `docs/READING-LIST.md` — the paper list. `CONTEXT.md` — domain glossary.
 - `notes/` — dated handoff journal + `00-KEY-FINDING-rgb-helps-completion.md`.
 - `reports/` — **weekly research reports** (shared LaTeX template + one dir per week; numbers/figures
@@ -70,9 +77,11 @@ the controlled "when does color help?" study.
   recommendation, grill only on genuine forks. He wants to understand, and dislikes clutter/confusion.
 
 ## Immediate next step
-1. **Efe reviews** `reports/2026-07-28-scale-curve/report.pdf` and sends/presents it to the advisor.
-2. **Pick the next spine** from the report's §5 menu. Standing recommendation: **widen the curve
-   (more categories) + seed the lower rungs** — data scale is still the binding constraint and the
-   flip question is still open. Other threads: extend N>150, the color head (beat mean-copy),
-   SnowflakeNet replication, demo Space.
-3. New week → new `reports/<date>-<slug>/` from the template (recipe in `reports/README.md`).
+1. **Efe presents** `reports/2026-07-28-scale-curve/report.pdf` to the advisor and asks the **4
+   questions** in `notes/handoff-2026-07-29.md` (#3 — which sense of "priors" — is the must-ask).
+   Meeting shape: report → proposal ("open the generative phase") → questions.
+2. **Claude builds Phase 1** (DDPM tools module + unit tests + s7 notebook, unconditional airplane
+   prior); **Efe runs it** on Colab. Background job in parallel: widen categories + extend N
+   (airplane prioritized). Tier-2 deep-reads (DDPM → PVD → PDR) start alongside.
+3. If the meeting redirects (grid diffusion, foundation priors), amend ADR-0009's outcome; otherwise
+   proceed. New week → new `reports/<date>-<slug>/` from the template (recipe in `reports/README.md`).
