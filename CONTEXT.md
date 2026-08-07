@@ -245,3 +245,40 @@ The mean pairwise CD among the k samples for one partial — measures diversity 
 commitment. Near-zero TMD = the sampler collapsed to a single answer (a regressor in
 disguise).
 _Avoid_: variance (underspecified).
+
+**RePaint / sampling-time conditioning (ADR-0010)**:
+Conditioning an *unconditionally trained* diffusion model at inference only: each reverse
+step re-injects the known region at the correct noise level, with time-travel resampling
+so the generated region harmonizes semantically (Lugmayr et al., CVPR 2022). The
+alternative branch to ADR-0009's trained conditioning (partial-encoder features); one
+model serves every occlusion ratio without retraining.
+_Avoid_: "inpainting model" (the model is unconditional; inpainting is the sampler).
+
+**Part-based color inpainting (the s7 opening line)**:
+Pelin's method, adopted in ADR-0010: frozen pretrained PoinTr completes geometry; a DDPM
+over the per-point RGB field colors the filled-in points via RePaint, conditioned on part
+labels (part-pooled denoiser features = a *learned* part-mean), with anchorless-part
+accounting and an adaptive resampling budget.
+_Avoid_: "6D diffusion" (geometry never diffuses here — that's PVD/LION, deliberately not
+this).
+
+**Anchorless part**:
+A part with zero visible points — part-mean has no anchor (falls to the global mean) and
+NN-copy leaks a neighbor part's color. The motivating case for the learned color prior;
+`E2` tables measure exactly this (the part is dropped by *GT* label — dropping by the
+segmenter can silently degenerate).
+_Avoid_: "unseen part" (the part's geometry exists in the completion; its *color evidence*
+is what's missing).
+
+**ΔE(Lab)**:
+Per-point color error: Euclidean distance in CIELAB (CIE76), averaged over the missing
+region only. ~2 = just noticeable; the color-line analog of CD, with the same two-row
+treatment (mean-of-seeds honesty row, best-of-k min-ΔE, pairwise-ΔE diversity).
+_Avoid_: RGB-space MSE (perceptually non-uniform; also her tables are ΔE — comparability).
+
+**Config-signed checkpoint**:
+A checkpoint stored with the full config signature that produced it (data source,
+category, sizes, split, architecture, epochs); loading requires an exact match, else
+retrain. Exists because an unsigned checkpoint silently loads a synthetic-trained model
+into a real-texture run and poisons the table (her warning, kept).
+_Avoid_: "cached model" (the signature check is the point, not the caching).
