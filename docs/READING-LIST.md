@@ -43,11 +43,12 @@ Per-point colored completion (closest to proposal's xyz+rgb output — thin lite
 | ⬜ | PointDreamer | arXiv 2024 | [arXiv:2406.15811](https://arxiv.org/abs/2406.15811) | The *sequential* texture baseline the proposal argues against (project → 2D inpaint → unproject). |
 | ⬜ | P2C (optional) | ICCV 2023 | [arXiv:2307.14726](https://arxiv.org/abs/2307.14726) | Self-supervised completion from single partial clouds. The mis-cited paper — but actually relevant for training without complete GT. |
 
-## Tier 2 — Generative machinery (▶ ACTIVE as of 2026-07-29 — the generative phase opened, ADR-0009; deep-read order: DDPM → PVD → PDR)
+## Tier 2 — Generative machinery (▶ ACTIVE as of 2026-07-29 — the generative phase opened, ADR-0009; deep-read order: DDPM → RePaint → PVD → PDR)
 
 | Status | Paper | Venue | Link | Why it matters here |
 |---|---|---|---|---|
 | ⬜ | DDPM (background) | NeurIPS 2020 | [arXiv:2006.11239](https://arxiv.org/abs/2006.11239) | Diffusion fundamentals — prerequisite for PVD/PDR and the proxy-diffusion idea. |
+| ⬜ | **RePaint** | CVPR 2022 | [arXiv:2201.09865](https://arxiv.org/abs/2201.09865) | Sampling-time conditioning of an unconditional DDPM (known-region re-injection + time-travel resampling). The mechanism behind the s7 opening line (ADR-0010, Pelin's method); our port is in `tools/pc_repaint.py`. |
 | ⬜ | PVD: Point-Voxel Diffusion | ICCV 2021 | [arXiv:2104.03670](https://arxiv.org/abs/2104.03670) | Diffusion for 3D shape generation & completion (W2 slides 39–40). |
 | ⬜ | PDR: Point Diffusion-Refinement | ICLR 2022 | [arXiv:2112.03530](https://arxiv.org/abs/2112.03530) | Conditional diffusion + refinement for completion (W2 slides 37–38). Closest prior art to "diffusion guided by a coarse completion". |
 
