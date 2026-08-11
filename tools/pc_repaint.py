@@ -21,13 +21,18 @@ the known one semantically, not just texturally (the RePaint paper's main findin
      prior instead of stealing a neighbor's color;
   3. the resampling budget adapts to the worst part's visibility.
 
-Typical Colab wiring (thin cells; see notebooks/repaintTraining.ipynb):
+Typical Colab wiring (thin cells; see notebooks/repaintTraining.ipynb). NOTE: import the
+modules FLAT with `<repo>/tools` on sys.path — `from tools.pc_repaint import ...` breaks
+next to a PoinTr checkout, because PoinTr ships a regular `tools` package
+(tools/__init__.py) and regular packages shadow our namespace-style tools/ regardless of
+sys.path order (its __init__ then imports the never-built emd extension):
 
-    from tools.pc_repaint import (Diffusion, PartColorDenoiser, train_color_ddpm,
-                                  repaint_colors, make_repaint_input, separate_colored,
-                                  deltaE, nn_color, part_mean_colors,
-                                  save_ckpt, try_load_ckpt, pull_dir_from_hf,
-                                  load_done_keys, append_eval_row, summarize_rows)
+    sys.path.insert(0, os.path.join(REPO_DIR, "tools"))
+    from pc_repaint import (Diffusion, PartColorDenoiser, train_color_ddpm,
+                            repaint_colors, make_repaint_input, separate_colored,
+                            deltaE, nn_color, part_mean_colors,
+                            save_ckpt, try_load_ckpt, pull_dir_from_hf,
+                            load_done_keys, append_eval_row, summarize_rows)
     dif = Diffusion(T=200, device="cuda")
     model = PartColorDenoiser(num_parts).to("cuda")
     if not try_load_ckpt(CKPT_DIR, "ddpm_part", model, sig):
