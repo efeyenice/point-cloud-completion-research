@@ -65,6 +65,11 @@
 \newtcolorbox{processbox}{enhanced,breakable,colback=wrgray!8,colframe=wrgray,
   boxrule=0.6pt,arc=2mm,left=8pt,right=8pt,top=6pt,bottom=6pt,
   fonttitle=\bfseries,coltitle=white,title={How this week was run}}
+% Background explainer for a method a reader may not know. Takes the title as an argument
+% so a report can run more than one. Added 2026-08-19; purely additive.
+\newtcolorbox{primer}[1]{enhanced,breakable,colback=wraccent!5,colframe=wraccent,
+  boxrule=0.6pt,arc=2mm,left=8pt,right=8pt,top=6pt,bottom=6pt,
+  fonttitle=\bfseries,coltitle=white,title={#1}}
 
 % ---------- small conveniences ----------
 \newcommand*\arm[1]{\textsf{#1}}                       % arm names: \arm{A_geo} etc.
